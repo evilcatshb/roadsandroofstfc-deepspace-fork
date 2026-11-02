@@ -2,6 +2,6 @@
   "__comment__": "This file was automatically created by mcresources",
   "parent": "rnr:block/tamped_block",
   "textures": {
-    "dirt": "tfc:block/red_kaolin_clay"
+    "dirt": "minecraft:block/calcite"
   }
 }

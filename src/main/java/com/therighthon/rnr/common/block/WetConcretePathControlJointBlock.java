@@ -22,9 +22,6 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import net.dries007.tfc.common.blockentities.TFCBlockEntities;
-import net.dries007.tfc.common.blockentities.TickCounterBlockEntity;
-import net.dries007.tfc.common.blocks.ExtendedProperties;
 
 //TODO: Now that this doesn't have spreading, it could probably just extend the ConcretePathControlJointBlock
 public class WetConcretePathControlJointBlock extends WetConcretePathBlock
@@ -39,7 +36,7 @@ public class WetConcretePathControlJointBlock extends WetConcretePathBlock
         return BaseCourseHeightBlock.SHAPE;
     }
 
-    public WetConcretePathControlJointBlock(ExtendedProperties properties)
+    public WetConcretePathControlJointBlock(Properties properties)
     {
         super(properties.speedFactor(getDefaultSpeedFactor()).randomTicks());
         //TODO: maybe remove?

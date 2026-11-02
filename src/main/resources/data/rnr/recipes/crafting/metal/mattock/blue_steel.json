@@ -1,6 +1,5 @@
 {
-  "__comment__": "This file was automatically created by mcresources",
-  "type": "tfc:advanced_shaped_crafting",
+  "type": "minecraft:crafting_shaped",
   "pattern": [
     "X",
     "Y"
@@ -14,13 +13,6 @@
     }
   },
   "result": {
-    "stack": {
-      "item": "rnr:metal/mattock/blue_steel"
-    },
-    "modifiers": [
-      "tfc:copy_forging_bonus"
-    ]
-  },
-  "input_row": 0,
-  "input_column": 0
+    "item": "rnr:metal/mattock/blue_steel"
+  }
 }

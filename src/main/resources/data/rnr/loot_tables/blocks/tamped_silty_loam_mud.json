@@ -8,7 +8,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "tfc:mud/silty_loam"
+          "name": "rnr:tamped_silty_loam_mud"
         }
       ],
       "conditions": [

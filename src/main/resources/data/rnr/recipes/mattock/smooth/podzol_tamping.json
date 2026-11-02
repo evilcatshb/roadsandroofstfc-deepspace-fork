@@ -1,0 +1,6 @@
+{
+  "type": "rnr:mattock",
+  "ingredient": "minecraft:podzol",
+  "result": "rnr:tamped_silty_loam",
+  "mode": "smooth"
+}

@@ -1,6 +1,6 @@
 {
   "__comment__": "This file was automatically created by mcresources",
-  "type": "tfc:chisel",
+  "type": "rnr:mattock",
   "ingredient": "rnr:wood/shingles/douglas_fir",
   "result": "rnr:wood/shingles/douglas_fir_stairs",
   "mode": "stair"

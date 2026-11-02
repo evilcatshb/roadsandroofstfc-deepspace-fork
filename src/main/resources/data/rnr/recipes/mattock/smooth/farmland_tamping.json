@@ -1,0 +1,6 @@
+{
+  "type": "rnr:mattock",
+  "ingredient": "minecraft:farmland",
+  "result": "rnr:tamped_loam",
+  "mode": "smooth"
+}

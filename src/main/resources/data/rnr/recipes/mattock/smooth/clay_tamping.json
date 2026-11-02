@@ -1,0 +1,6 @@
+{
+  "type": "rnr:mattock",
+  "ingredient": "minecraft:clay",
+  "result": "rnr:tamped_silt_mud",
+  "mode": "smooth"
+}

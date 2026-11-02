@@ -1,0 +1,31 @@
+{
+  "replace": false,
+  "values": [
+    "#rnr:gravel_road_blocks",
+    "#rnr:gravel_road_slabs",
+    "#rnr:gravel_road_stairs",
+    "#rnr:macadam_road_blocks",
+    "#rnr:macadam_road_slabs",
+    "#rnr:macadam_road_stairs",
+    "#rnr:sett_road_blocks",
+    "#rnr:sett_road_slabs",
+    "#rnr:sett_road_stairs",
+    "#rnr:cobbled_road_blocks",
+    "#rnr:cobbled_road_slabs",
+    "#rnr:cobbled_road_stairs",
+    "#rnr:flagstones_blocks",
+    "#rnr:flagstones_slabs",
+    "#rnr:flagstones_stairs",
+    "#rnr:dry_concrete_roads",
+    "#rnr:dry_concrete_road_slabs",
+    "#rnr:dry_concrete_road_stairs",
+    "#rnr:wet_concrete_roads",
+    "#rnr:cracked_concrete_roads",
+    "rnr:hoggin",
+    "rnr:hoggin_slab",
+    "rnr:hoggin_stairs",
+    "rnr:brick_road",
+    "rnr:brick_road_slab",
+    "rnr:brick_road_stairs"
+  ]
+}

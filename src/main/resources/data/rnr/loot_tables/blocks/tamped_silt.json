@@ -8,7 +8,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "tfc:dirt/silt"
+          "name": "rnr:tamped_silt"
         }
       ],
       "conditions": [

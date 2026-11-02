@@ -1,6 +1,6 @@
 {
   "__comment__": "This file was automatically created by mcresources",
-  "type": "tfc:chisel",
+  "type": "rnr:mattock",
   "ingredient": "rnr:wood/shingles/hickory",
   "result": "rnr:wood/shingles/hickory_stairs",
   "mode": "stair"

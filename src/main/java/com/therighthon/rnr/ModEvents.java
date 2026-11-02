@@ -91,11 +91,11 @@ public class ModEvents
             if (event.getItemStack().is(RNRTags.Items.MATTOCKS))
             {
                 // TODO: So, this is kind of egregious, but also I couldn't figure out why my timer block entity wasn't getting set right when I did this in the mattock item
-                RNRHelpers.useMattockOn(event.getEntity(), level, pos, event.getHitVec());
+                InteractionResult result = RNRHelpers.useMattockOn(event.getEntity(), level, pos, event.getHitVec(), event.getHand()); if (result.consumesAction() && event.isCancelable()) { event.setCancellationResult(result); event.setCanceled(true); }
             }
             else
             {
-                RNRHelpers.blockModRecipeCompatible(level.getBlockState(pos), level, pos, Objects.requireNonNull(event.getEntity()), event.getHand(), event.getHitVec());
+                InteractionResult result = RNRHelpers.blockModRecipeCompatible(level.getBlockState(pos), level, pos, Objects.requireNonNull(event.getEntity()), event.getHand(), event.getHitVec()); if (result.consumesAction() && event.isCancelable()) { event.setCancellationResult(result); event.setCanceled(true); }
             }
         }
     }

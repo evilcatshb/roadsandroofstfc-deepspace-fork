@@ -1,0 +1,6 @@
+{
+  "type": "rnr:mattock",
+  "ingredient": "minecraft:rooted_dirt",
+  "result": "rnr:tamped_silty_loam_mud",
+  "mode": "smooth"
+}

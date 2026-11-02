@@ -1,8 +1,6 @@
 package com.therighthon.rnr.common.recipe;
 
 import com.google.gson.JsonObject;
-import com.therighthon.rnr.RoadsAndRoofs;
-import javax.annotation.Nullable;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -14,135 +12,74 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.Nullable;
 
-import net.dries007.tfc.common.recipes.SimpleBlockRecipe;
-import net.dries007.tfc.common.recipes.ingredients.BlockIngredient;
+import java.util.ArrayList;
+import java.util.List;
 
-import net.dries007.tfc.util.JsonHelpers;
-import net.dries007.tfc.util.collections.IndirectHashCollection;
-
-public class BlockModRecipe extends SimpleBlockRecipe
-{
-    private final ResourceLocation id;
-    private final BlockIngredient inputBlock;
-    private final BlockState outputBlock;
+public class BlockModRecipe extends RNRSimpleBlockRecipe {
     private final Ingredient inputItem;
-    private final Boolean consumesItem;
+    private final boolean consumesItem;
+    public static final List<BlockModRecipe> CACHE = new ArrayList<>();
 
-    public BlockModRecipe(ResourceLocation id, Ingredient inputItem, BlockIngredient inputBlock, BlockState outputBlock, Boolean consumesItem)
-    {
-        super(id, inputBlock, outputBlock, false);
-        this.id = id;
-        this.inputItem = inputItem;
-        this.inputBlock = inputBlock;
-        this.outputBlock = outputBlock;
-        this.consumesItem = consumesItem;
+    public BlockModRecipe(ResourceLocation id, Ingredient item, RNRBlockIngredient block, BlockState out, boolean consume) {
+        super(id, block, out);
+        inputItem = item;
+        consumesItem = consume;
     }
 
-    public static final IndirectHashCollection<Block, BlockModRecipe> CACHE = IndirectHashCollection.createForRecipe(blockModRecipe -> blockModRecipe.getInputBlock().blocks(), RNRRecipeTypes.BLOCK_MOD_RECIPE);
+    /** Keep the legacy fast lookup cache synchronized with the active recipe manager. */
+    private static void cache(BlockModRecipe recipe) {
+        CACHE.removeIf(existing -> existing.getId().equals(recipe.getId()));
+        CACHE.add(recipe);
+    }
 
-    public static BlockModRecipe getRecipe(BlockState state, ItemStack item)
-    {
-        for (BlockModRecipe recipe : CACHE.getAll(state.getBlock()))
-        {
-            if (recipe.matches(state, item))
-            {
-                return recipe;
-            }
+    public static BlockModRecipe getRecipe(BlockState state, ItemStack item) {
+        for (BlockModRecipe recipe : CACHE) {
+            if (recipe.matches(state, item)) return recipe;
         }
         return null;
     }
 
-    public boolean matches(BlockState state, ItemStack item)
-    {
-        return (inputBlock.test(state) && inputItem.test(item));
+    public boolean matches(BlockState state, ItemStack item) {
+        return ingredient.test(state) && inputItem.test(item);
     }
 
+    public Ingredient getInputItem() { return inputItem; }
+    public BlockState getOutputBlock() { return outputState; }
+    public boolean consumesItem() { return consumesItem; }
 
-    public BlockIngredient getInputBlock()
-    {
-        return this.inputBlock;
-    }
-
-    public Ingredient getInputItem()
-    {
-        return this.inputItem;
-    }
-
-    public BlockState getOutputBlock()
-    {
-        return outputBlock;
-    }
-
-    public Boolean consumesItem()
-    {
-        return consumesItem;
-    }
-
-    @Override
-    public boolean canCraftInDimensions(int pWidth, int pHeight)
-    {
-        return true;
-    }
-
-    @Override
-    public ItemStack getResultItem(RegistryAccess registryAccess)
-    {
-        return ItemStack.EMPTY;
-    }
-
-    @Override
-    public ResourceLocation getId()
-    {
-        return id;
-    }
-
-    @Override
-    public RecipeSerializer<?> getSerializer()
-    {
-        return RNRRecipeSerializers.BLOCK_MOD_RECIPE.get();
-    }
-
-    @Override
-    public RecipeType<?> getType()
-    {
-        return RNRRecipeTypes.BLOCK_MOD_RECIPE.get();
-    }
+    @Override public RecipeSerializer<?> getSerializer() { return RNRRecipeSerializers.BLOCK_MOD_RECIPE.get(); }
+    @Override public RecipeType<?> getType() { return RNRRecipeTypes.BLOCK_MOD_RECIPE.get(); }
 
     public static class Serializer implements RecipeSerializer<BlockModRecipe> {
-        public static final Serializer INSTANCE = new Serializer();
-        public static final ResourceLocation ID =
-            new ResourceLocation(RoadsAndRoofs.MOD_ID,"block_mod");
-
         @Override
-        public BlockModRecipe fromJson(ResourceLocation id, JsonObject json) {
-            final Ingredient inputItem = Ingredient.fromJson(json.get("input_item"));
-            final BlockIngredient inputBlock = BlockIngredient.fromJson(JsonHelpers.get(json, "input_block"));
-            final BlockState outputBlock = JsonHelpers.getBlockState(GsonHelper.getAsString(json, "output_block"));
-            final boolean consumeIngredient = json.has("consume_ingredient") ? JsonHelpers.getAsBoolean(json, "consume_ingredient") : Boolean.TRUE;
-
-
-            return new BlockModRecipe(id, inputItem, inputBlock, outputBlock, consumeIngredient);
+        public BlockModRecipe fromJson(ResourceLocation id, JsonObject j) {
+            Ingredient i = Ingredient.fromJson(j.get("input_item"));
+            RNRBlockIngredient b = RNRBlockIngredient.fromJson(j.get("input_block"));
+            BlockState o = ForgeRegistries.BLOCKS.getValue(ResourceLocation.tryParse(GsonHelper.getAsString(j, "output_block"))).defaultBlockState();
+            BlockModRecipe recipe = new BlockModRecipe(id, i, b, o, j.has("consume_ingredient") ? j.get("consume_ingredient").getAsBoolean() : true);
+            cache(recipe);
+            return recipe;
         }
 
+        @Override
         @Nullable
-        @Override
-        public BlockModRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
-            final Ingredient inputItem = Ingredient.fromNetwork(buffer);
-            final BlockIngredient inputBlock = BlockIngredient.fromNetwork(buffer);
-            final BlockState outputBlock = buffer.readRegistryIdUnsafe(ForgeRegistries.BLOCKS).defaultBlockState();
-            final Boolean consumesItem = buffer.readBoolean();
-
-            return new BlockModRecipe(id, inputItem, inputBlock, outputBlock, consumesItem);
+        public BlockModRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf b) {
+            Ingredient i = Ingredient.fromNetwork(b);
+            RNRBlockIngredient bi = RNRBlockIngredient.fromNetwork(b);
+            Block x = ForgeRegistries.BLOCKS.getValue(b.readResourceLocation());
+            BlockModRecipe recipe = new BlockModRecipe(id, i, bi, x.defaultBlockState(), b.readBoolean());
+            cache(recipe);
+            return recipe;
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf buffer, BlockModRecipe recipe) {
-            recipe.inputItem.toNetwork(buffer);
-            recipe.inputBlock.toNetwork(buffer);
-            buffer.writeRegistryIdUnsafe(ForgeRegistries.BLOCKS, recipe.outputBlock.getBlock());
-            buffer.writeBoolean(recipe.consumesItem);
+        public void toNetwork(FriendlyByteBuf b, BlockModRecipe r) {
+            r.inputItem.toNetwork(b);
+            r.ingredient.toNetwork(b);
+            b.writeResourceLocation(ForgeRegistries.BLOCKS.getKey(r.outputState.getBlock()));
+            b.writeBoolean(r.consumesItem);
         }
-
     }
 }

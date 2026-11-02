@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "rnr:unfired_terracotta_roof_tile"
+  },
+  "result": "rnr:terracotta_roof_tile",
+  "experience": 0.35,
+  "cookingtime": 200
+}

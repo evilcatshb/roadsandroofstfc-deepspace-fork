@@ -2,7 +2,7 @@
   "__comment__": "This file was automatically created by mcresources",
   "parent": "rnr:block/overfilled_block",
   "textures": {
-    "top": "tfc:block/rock/gravel/andesite",
+    "top": "rnr:block/rock/gravel_road/andesite",
     "gravel": "minecraft:block/gravel"
   }
 }

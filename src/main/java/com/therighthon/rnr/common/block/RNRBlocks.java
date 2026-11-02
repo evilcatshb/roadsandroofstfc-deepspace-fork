@@ -1,5 +1,7 @@
 package com.therighthon.rnr.common.block;
+import com.therighthon.rnr.common.RNRUtil;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -30,23 +32,12 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-import net.dries007.tfc.client.TFCSounds;
-import net.dries007.tfc.common.blockentities.TFCBlockEntities;
-import net.dries007.tfc.common.blocks.ExtendedProperties;
-import net.dries007.tfc.common.blocks.TFCBlocks;
-import net.dries007.tfc.common.blocks.rock.Rock;
-import net.dries007.tfc.common.blocks.wood.Wood;
-import net.dries007.tfc.common.fluids.ExtendedFluidType;
-import net.dries007.tfc.common.fluids.FluidRegistryObject;
-import net.dries007.tfc.common.fluids.FluidTypeClientProperties;
-import net.dries007.tfc.util.Helpers;
-import net.dries007.tfc.util.registry.RegistrationHelpers;
+import com.therighthon.rnr.common.material.RNRMaterials.Rock;
+import com.therighthon.rnr.common.material.RNRMaterials.Wood;
 
 public class RNRBlocks
 {
-    public static final DeferredRegister<FluidType> FLUID_TYPES = DeferredRegister.create(ForgeRegistries.Keys.FLUID_TYPES, RoadsAndRoofs.MOD_ID);
-    public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(ForgeRegistries.FLUIDS, RoadsAndRoofs.MOD_ID);
-
+        
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, RoadsAndRoofs.MOD_ID);
 
     private static <T extends Block> RegistryObject<T> registerNoItem(String name, Supplier<T> blockSupplier)
@@ -66,12 +57,11 @@ public class RNRBlocks
 
     private static <T extends Block> RegistryObject<T> register(String name, Supplier<T> blockSupplier, @Nullable Function<T, ? extends BlockItem> blockItemFactory)
     {
-        return RegistrationHelpers.registerBlock(BLOCKS, RNRItems.ITEMS, name, blockSupplier, blockItemFactory);
+        String normalizedName = name.toLowerCase(Locale.ROOT);
+        RegistryObject<T> block = BLOCKS.register(normalizedName, blockSupplier);
+        if (blockItemFactory != null) RNRItems.ITEMS.register(normalizedName, () -> blockItemFactory.apply(block.get()));
+        return block;
     }
-
-    public static final Map<SimpleRNRFluid, RegistryObject<LiquidBlock>> SIMPLE_RNR_FLUIDS = Helpers.mapOfKeys(SimpleRNRFluid.class, fluid ->
-        registerNoItem("fluid/" + fluid.getId(), () -> new LiquidBlock(RNRFluids.SIMPLE_RNR_FLUIDS.get(fluid).source(), BlockBehaviour.Properties.copy(Blocks.WATER).noLootTable()))
-    );
 
     public static final RegistryObject<Block> TAMPED_SILT = register("tamped_silt", () -> new TampedSoilBlock(BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).strength(3.0F).sound(SoundType.ROOTED_DIRT)));
     public static final RegistryObject<Block> TAMPED_LOAM = register("tamped_loam", () -> new TampedSoilBlock(BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).strength(3.0F).sound(SoundType.ROOTED_DIRT)));
@@ -83,7 +73,7 @@ public class RNRBlocks
     public static final RegistryObject<Block> TAMPED_SANDY_LOAM_MUD = register("tamped_sandy_loam_mud", () -> new TampedMudBlock(BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).strength(3.0F).sound(SoundType.ROOTED_DIRT)));
     public static final RegistryObject<Block> TAMPED_SILTY_LOAM_MUD = register("tamped_silty_loam_mud", () -> new TampedMudBlock(BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).strength(3.0F).sound(SoundType.ROOTED_DIRT)));
 
-    public static final RegistryObject<Block> TAMPED_PEAT = register("tamped_peat", () -> new TampedMudBlock(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BLACK).strength(3.0F).sound(TFCSounds.PEAT)));
+    public static final RegistryObject<Block> TAMPED_PEAT = register("tamped_peat", () -> new TampedMudBlock(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BLACK).strength(3.0F).sound(SoundType.GRASS)));
     public static final RegistryObject<Block> TAMPED_KAOLIN = register("tamped_kaolin", () -> new TampedSoilBlock(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_WHITE).randomTicks().strength(5.0F).sound(SoundType.GRAVEL)));
 
     public static final RegistryObject<Block> BASE_COURSE = register("base_course", () -> new BaseCourseBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(3.0F).sound(SoundType.GRAVEL)));
@@ -125,29 +115,29 @@ public class RNRBlocks
 
     public static final RegistryObject<Block> CONCRETE_ROAD_CONTROL_JOINT = register("concrete_road_control_joint", () -> new ConcretePathControlJointBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(5.0F).sound(SoundType.STONE)));
 
-    public static final RegistryObject<Block> POURING_CONCRETE_ROAD = register("pouring_concrete_road", () -> new PouringConcretePathBlock(ExtendedProperties.of(MapColor.COLOR_GRAY).mapColor(MapColor.COLOR_GRAY).strength(2.5F).sound(SoundType.MUD)));
+    public static final RegistryObject<Block> POURING_CONCRETE_ROAD = register("pouring_concrete_road", () -> new PouringConcretePathBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(2.5F).sound(SoundType.MUD)));
 
-    public static final RegistryObject<Block> WET_CONCRETE_ROAD = register("wet_concrete_road", () -> new CrackingWetConcretePathBlock(ExtendedProperties.of(MapColor.COLOR_GRAY).mapColor(MapColor.COLOR_GRAY).strength(2.5F).sound(SoundType.MUD).randomTicks().blockEntity(TFCBlockEntities.TICK_COUNTER)));
-    public static final RegistryObject<Block> TRODDEN_WET_CONCRETE_ROAD = register("trodden_wet_concrete_road", () -> new CrackingWetConcretePathBlock(ExtendedProperties.of(MapColor.COLOR_GRAY).strength(2.5F).sound(SoundType.MUD).randomTicks().blockEntity(TFCBlockEntities.TICK_COUNTER)));
-    public static final RegistryObject<Block> WET_CONCRETE_ROAD_CONTROL_JOINT = register("wet_concrete_road_control_joint", () -> new WetConcretePathControlJointBlock(ExtendedProperties.of(MapColor.COLOR_GRAY).strength(2.5F).sound(SoundType.MUD).randomTicks().blockEntity(TFCBlockEntities.TICK_COUNTER)));
+    public static final RegistryObject<Block> WET_CONCRETE_ROAD = register("wet_concrete_road", () -> new CrackingWetConcretePathBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(2.5F).sound(SoundType.MUD).randomTicks()));
+    public static final RegistryObject<Block> TRODDEN_WET_CONCRETE_ROAD = register("trodden_wet_concrete_road", () -> new CrackingWetConcretePathBlock(BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.MUD).randomTicks()));
+    public static final RegistryObject<Block> WET_CONCRETE_ROAD_CONTROL_JOINT = register("wet_concrete_road_control_joint", () -> new WetConcretePathControlJointBlock(BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.MUD).randomTicks()));
 
-    public static final RegistryObject<Block> WET_CONCRETE_ROAD_PANEL = register("wet_concrete_road_panel", () -> new WetConcretePathBlock(ExtendedProperties.of(MapColor.COLOR_GRAY).mapColor(MapColor.COLOR_GRAY).strength(2.5F).sound(SoundType.MUD).randomTicks().blockEntity(TFCBlockEntities.TICK_COUNTER)));
-    public static final RegistryObject<Block> WET_CONCRETE_ROAD_SETT = register("wet_concrete_road_sett", () -> new WetConcretePathBlock(ExtendedProperties.of(MapColor.COLOR_GRAY).mapColor(MapColor.COLOR_GRAY).strength(2.5F).sound(SoundType.MUD).randomTicks().blockEntity(TFCBlockEntities.TICK_COUNTER)));
-    public static final RegistryObject<Block> WET_CONCRETE_ROAD_FLAGSTONES = register("wet_concrete_road_flagstones", () -> new WetConcretePathBlock(ExtendedProperties.of(MapColor.COLOR_GRAY).mapColor(MapColor.COLOR_GRAY).strength(2.5F).sound(SoundType.MUD).randomTicks().blockEntity(TFCBlockEntities.TICK_COUNTER)));
+    public static final RegistryObject<Block> WET_CONCRETE_ROAD_PANEL = register("wet_concrete_road_panel", () -> new WetConcretePathBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(2.5F).sound(SoundType.MUD).randomTicks()));
+    public static final RegistryObject<Block> WET_CONCRETE_ROAD_SETT = register("wet_concrete_road_sett", () -> new WetConcretePathBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(2.5F).sound(SoundType.MUD).randomTicks()));
+    public static final RegistryObject<Block> WET_CONCRETE_ROAD_FLAGSTONES = register("wet_concrete_road_flagstones", () -> new WetConcretePathBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(2.5F).sound(SoundType.MUD).randomTicks()));
 
-    public static final BlockBehaviour.Properties ROOF_PROPERTIES = ExtendedProperties.of(MapColor.WOOD).strength(1.0F, 0.6F).noOcclusion().isViewBlocking(TFCBlocks::never).sound(SoundType.WOOD).flammable(50, 100).properties();
+    public static final BlockBehaviour.Properties ROOF_PROPERTIES = BlockBehaviour.Properties.of().strength(1.0F, 0.6F).noOcclusion().sound(SoundType.WOOD);
 
     public static final RegistryObject<Block> ROOF_FRAME = register("roof_frame", () -> new BlockModEnabledBlock(ROOF_PROPERTIES, true));
     public static final RegistryObject<Block> ROOF_FRAME_SLAB = register("roof_frame_slab", () -> new SlabBlock(ROOF_PROPERTIES));
     public static final RegistryObject<Block> ROOF_FRAME_STAIRS = register("roof_frame_stairs", () -> new StairBlock(() -> ROOF_FRAME.get().defaultBlockState(), ROOF_PROPERTIES));
 
-    public static final BlockBehaviour.Properties THATCH_PROPERTIES = ExtendedProperties.of(MapColor.SAND).strength(1.0F, 0.6F).noOcclusion().isViewBlocking(TFCBlocks::never).sound(TFCSounds.THATCH).flammable(40, 75).properties();
+    public static final BlockBehaviour.Properties THATCH_PROPERTIES = BlockBehaviour.Properties.of().strength(1.0F, 0.6F).noOcclusion().sound(SoundType.GRASS);
 
     public static final RegistryObject<Block> THATCH_ROOF = register("thatch_roof", () -> new Block(THATCH_PROPERTIES));
     public static final RegistryObject<Block> THATCH_ROOF_SLAB = register("thatch_roof_slab", () -> new SlabBlock(THATCH_PROPERTIES));
     public static final RegistryObject<Block> THATCH_ROOF_STAIRS = register("thatch_roof_stairs", () -> new StairBlock(() -> THATCH_ROOF.get().defaultBlockState(), THATCH_PROPERTIES));
 
-    public static final BlockBehaviour.Properties CERAMIC_PROPERTIES = ExtendedProperties.of(MapColor.TERRACOTTA_BROWN).strength(1.0F, 0.6F).noOcclusion().isViewBlocking(TFCBlocks::never).sound(SoundType.DEEPSLATE_TILES).properties();
+    public static final BlockBehaviour.Properties CERAMIC_PROPERTIES = BlockBehaviour.Properties.of().strength(1.0F, 0.6F).noOcclusion().sound(SoundType.DEEPSLATE_TILES);
 
     public static final RegistryObject<Block> TERRACOTTA_ROOF = register("terracotta_roof", () -> new Block(CERAMIC_PROPERTIES));
     public static final RegistryObject<Block> TERRACOTTA_ROOF_SLAB = register("terracotta_roof_slab", () -> new SlabBlock(CERAMIC_PROPERTIES));
@@ -156,25 +146,25 @@ public class RNRBlocks
     public static final RegistryObject<Block> CERAMIC_ROOF_SLAB = register("ceramic_roof_slab", () -> new SlabBlock(CERAMIC_PROPERTIES));
     public static final RegistryObject<Block> CERAMIC_ROOF_STAIRS = register("ceramic_roof_stairs", () -> new StairBlock(() -> TERRACOTTA_ROOF.get().defaultBlockState(), CERAMIC_PROPERTIES));
 
-    public static final Map<Wood, RegistryObject<Block>> WOOD_SHINGLE_ROOFS = Helpers.mapOfKeys(Wood.class, wood -> register("wood/shingles/" + wood.getSerializedName(), () -> new Block(ROOF_PROPERTIES)));
-    public static final Map<Wood, RegistryObject<Block>> WOOD_SHINGLE_ROOF_SLABS = Helpers.mapOfKeys(Wood.class, wood -> register("wood/shingles/" + wood.getSerializedName() + "_slab", () -> new SlabBlock(ROOF_PROPERTIES)));
-    public static final Map<Wood, RegistryObject<Block>> WOOD_SHINGLE_ROOF_STAIRS = Helpers.mapOfKeys(Wood.class, wood -> register("wood/shingles/" + wood.getSerializedName() + "_stairs", () -> new StairBlock(WOOD_SHINGLE_ROOFS.get(wood).get().defaultBlockState(), ROOF_PROPERTIES)));
+    public static final Map<Wood, RegistryObject<Block>> WOOD_SHINGLE_ROOFS = RNRUtil.mapOfKeys(Wood.class, wood -> register("wood/shingles/" + wood.getSerializedName(), () -> new Block(ROOF_PROPERTIES)));
+    public static final Map<Wood, RegistryObject<Block>> WOOD_SHINGLE_ROOF_SLABS = RNRUtil.mapOfKeys(Wood.class, wood -> register("wood/shingles/" + wood.getSerializedName() + "_slab", () -> new SlabBlock(ROOF_PROPERTIES)));
+    public static final Map<Wood, RegistryObject<Block>> WOOD_SHINGLE_ROOF_STAIRS = RNRUtil.mapOfKeys(Wood.class, wood -> register("wood/shingles/" + wood.getSerializedName() + "_stairs", () -> new StairBlock(WOOD_SHINGLE_ROOFS.get(wood).get().defaultBlockState(), ROOF_PROPERTIES)));
 
-    public static final Map<Rock, Map<StoneBlockType, RegistryObject<Block>>> ROCK_BLOCKS = Helpers.mapOfKeys(Rock.class, rock ->
-        Helpers.mapOfKeys(StoneBlockType.class, type ->
-            register(("rock/" + type.name() + "/" + rock.name()), () -> type.create(rock))
+    public static final Map<Rock, Map<StoneBlockType, RegistryObject<Block>>> ROCK_BLOCKS = RNRUtil.mapOfKeys(Rock.class, rock ->
+        RNRUtil.mapOfKeys(StoneBlockType.class, type ->
+            register(("rock/" + type.getSerializedName() + "/" + rock.getSerializedName()), () -> type.create(rock))
         )
     );
 
-    public static final Map<Rock, Map<StoneBlockType, RegistryObject<Block>>> ROCK_SLABS = Helpers.mapOfKeys(Rock.class, rock ->
-        Helpers.mapOfKeys(StoneBlockType.class, StoneBlockType::hasVariants, type ->
-            register(("rock/" + type.name() + "/" + rock.name())+ "_slab", () -> type.createRockSlab(rock, type))
+    public static final Map<Rock, Map<StoneBlockType, RegistryObject<Block>>> ROCK_SLABS = RNRUtil.mapOfKeys(Rock.class, rock ->
+        RNRUtil.mapOfKeys(StoneBlockType.class, StoneBlockType::hasVariants, type ->
+            register(("rock/" + type.getSerializedName() + "/" + rock.getSerializedName())+ "_slab", () -> type.createRockSlab(rock, type))
         )
     );
 
-    public static final Map<Rock, Map<StoneBlockType, RegistryObject<Block>>> ROCK_STAIRS = Helpers.mapOfKeys(Rock.class, rock ->
-        Helpers.mapOfKeys(StoneBlockType.class, StoneBlockType::hasVariants, type ->
-            register(("rock/" + type.name() + "/" + rock.name()) + "_stairs", () -> type.createPathStairs(rock, type))
+    public static final Map<Rock, Map<StoneBlockType, RegistryObject<Block>>> ROCK_STAIRS = RNRUtil.mapOfKeys(Rock.class, rock ->
+        RNRUtil.mapOfKeys(StoneBlockType.class, StoneBlockType::hasVariants, type ->
+            register(("rock/" + type.getSerializedName() + "/" + rock.getSerializedName()) + "_stairs", () -> type.createPathStairs(rock, type))
         )
     );
 
@@ -200,27 +190,4 @@ public class RNRBlocks
     public static final RegistryObject<Block> PINK_SANDSTONE_FLAGSTONES_SLAB = register("pink_sandstone_flagstones_slab", () -> new StonePathSlabBlock(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_PINK).strength(5.0F).sound(SoundType.STONE)));
     public static final RegistryObject<Block> PINK_SANDSTONE_FLAGSTONES_STAIRS = register("pink_sandstone_flagstones_stairs", () -> new PathStairBlock(() -> PINK_SANDSTONE_FLAGSTONES.get().defaultBlockState(), BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_PINK).strength(5.0F).sound(SoundType.STONE), RoadsAndRoofs.NORMAL_PATH_SPEED));
 
-    private static <F extends FlowingFluid> FluidRegistryObject<F> register(String name, Consumer<ForgeFlowingFluid.Properties> builder, FluidType.Properties typeProperties, FluidTypeClientProperties clientProperties, Function<ForgeFlowingFluid.Properties, F> sourceFactory, Function<ForgeFlowingFluid.Properties, F> flowingFactory)
-    {
-        // Names `metal/foo` to `metal/flowing_foo`
-        final int index = name.lastIndexOf('/');
-        final String flowingName = index == -1 ? "flowing_" + name : name.substring(0, index) + "/flowing_" + name.substring(index + 1);
-
-        return RegistrationHelpers.registerFluid(FLUID_TYPES, FLUIDS, name, name, flowingName, builder, () -> new ExtendedFluidType(typeProperties, clientProperties), sourceFactory, flowingFactory);
-    }
-
-    private static FluidType.Properties waterLike()
-    {
-        return FluidType.Properties.create()
-            .adjacentPathType(BlockPathTypes.WATER)
-            .sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL)
-            .sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY)
-            .canConvertToSource(true)
-            .canDrown(true)
-            .canExtinguish(true)
-            .canHydrate(false)
-            .canPushEntity(true)
-            .canSwim(true)
-            .supportsBoating(true);
-    }
 }

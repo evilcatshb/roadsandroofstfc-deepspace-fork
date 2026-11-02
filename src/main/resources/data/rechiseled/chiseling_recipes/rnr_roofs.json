@@ -1,0 +1,222 @@
+{
+  "type": "rechiseled:chiseling",
+  "entries": [
+    {
+      "item": "rnr:ceramic_roof"
+    },
+    {
+      "item": "rnr:ceramic_roof_slab"
+    },
+    {
+      "item": "rnr:ceramic_roof_stairs"
+    },
+    {
+      "item": "rnr:roof_frame"
+    },
+    {
+      "item": "rnr:roof_frame_slab"
+    },
+    {
+      "item": "rnr:roof_frame_stairs"
+    },
+    {
+      "item": "rnr:terracotta_roof"
+    },
+    {
+      "item": "rnr:terracotta_roof_slab"
+    },
+    {
+      "item": "rnr:terracotta_roof_stairs"
+    },
+    {
+      "item": "rnr:thatch_roof"
+    },
+    {
+      "item": "rnr:thatch_roof_slab"
+    },
+    {
+      "item": "rnr:thatch_roof_stairs"
+    },
+    {
+      "item": "rnr:wood/shingles/acacia"
+    },
+    {
+      "item": "rnr:wood/shingles/acacia_slab"
+    },
+    {
+      "item": "rnr:wood/shingles/acacia_stairs"
+    },
+    {
+      "item": "rnr:wood/shingles/ash"
+    },
+    {
+      "item": "rnr:wood/shingles/ash_slab"
+    },
+    {
+      "item": "rnr:wood/shingles/ash_stairs"
+    },
+    {
+      "item": "rnr:wood/shingles/aspen"
+    },
+    {
+      "item": "rnr:wood/shingles/aspen_slab"
+    },
+    {
+      "item": "rnr:wood/shingles/aspen_stairs"
+    },
+    {
+      "item": "rnr:wood/shingles/birch"
+    },
+    {
+      "item": "rnr:wood/shingles/birch_slab"
+    },
+    {
+      "item": "rnr:wood/shingles/birch_stairs"
+    },
+    {
+      "item": "rnr:wood/shingles/blackwood"
+    },
+    {
+      "item": "rnr:wood/shingles/blackwood_slab"
+    },
+    {
+      "item": "rnr:wood/shingles/blackwood_stairs"
+    },
+    {
+      "item": "rnr:wood/shingles/chestnut"
+    },
+    {
+      "item": "rnr:wood/shingles/chestnut_slab"
+    },
+    {
+      "item": "rnr:wood/shingles/chestnut_stairs"
+    },
+    {
+      "item": "rnr:wood/shingles/douglas_fir"
+    },
+    {
+      "item": "rnr:wood/shingles/douglas_fir_slab"
+    },
+    {
+      "item": "rnr:wood/shingles/douglas_fir_stairs"
+    },
+    {
+      "item": "rnr:wood/shingles/hickory"
+    },
+    {
+      "item": "rnr:wood/shingles/hickory_slab"
+    },
+    {
+      "item": "rnr:wood/shingles/hickory_stairs"
+    },
+    {
+      "item": "rnr:wood/shingles/kapok"
+    },
+    {
+      "item": "rnr:wood/shingles/kapok_slab"
+    },
+    {
+      "item": "rnr:wood/shingles/kapok_stairs"
+    },
+    {
+      "item": "rnr:wood/shingles/mangrove"
+    },
+    {
+      "item": "rnr:wood/shingles/mangrove_slab"
+    },
+    {
+      "item": "rnr:wood/shingles/mangrove_stairs"
+    },
+    {
+      "item": "rnr:wood/shingles/maple"
+    },
+    {
+      "item": "rnr:wood/shingles/maple_slab"
+    },
+    {
+      "item": "rnr:wood/shingles/maple_stairs"
+    },
+    {
+      "item": "rnr:wood/shingles/oak"
+    },
+    {
+      "item": "rnr:wood/shingles/oak_slab"
+    },
+    {
+      "item": "rnr:wood/shingles/oak_stairs"
+    },
+    {
+      "item": "rnr:wood/shingles/palm"
+    },
+    {
+      "item": "rnr:wood/shingles/palm_slab"
+    },
+    {
+      "item": "rnr:wood/shingles/palm_stairs"
+    },
+    {
+      "item": "rnr:wood/shingles/pine"
+    },
+    {
+      "item": "rnr:wood/shingles/pine_slab"
+    },
+    {
+      "item": "rnr:wood/shingles/pine_stairs"
+    },
+    {
+      "item": "rnr:wood/shingles/rosewood"
+    },
+    {
+      "item": "rnr:wood/shingles/rosewood_slab"
+    },
+    {
+      "item": "rnr:wood/shingles/rosewood_stairs"
+    },
+    {
+      "item": "rnr:wood/shingles/sequoia"
+    },
+    {
+      "item": "rnr:wood/shingles/sequoia_slab"
+    },
+    {
+      "item": "rnr:wood/shingles/sequoia_stairs"
+    },
+    {
+      "item": "rnr:wood/shingles/spruce"
+    },
+    {
+      "item": "rnr:wood/shingles/spruce_slab"
+    },
+    {
+      "item": "rnr:wood/shingles/spruce_stairs"
+    },
+    {
+      "item": "rnr:wood/shingles/sycamore"
+    },
+    {
+      "item": "rnr:wood/shingles/sycamore_slab"
+    },
+    {
+      "item": "rnr:wood/shingles/sycamore_stairs"
+    },
+    {
+      "item": "rnr:wood/shingles/white_cedar"
+    },
+    {
+      "item": "rnr:wood/shingles/white_cedar_slab"
+    },
+    {
+      "item": "rnr:wood/shingles/white_cedar_stairs"
+    },
+    {
+      "item": "rnr:wood/shingles/willow"
+    },
+    {
+      "item": "rnr:wood/shingles/willow_slab"
+    },
+    {
+      "item": "rnr:wood/shingles/willow_stairs"
+    }
+  ],
+  "overwrite": false
+}

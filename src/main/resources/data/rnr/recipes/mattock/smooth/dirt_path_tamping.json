@@ -1,0 +1,6 @@
+{
+  "type": "rnr:mattock",
+  "ingredient": "minecraft:dirt_path",
+  "result": "rnr:tamped_loam",
+  "mode": "smooth"
+}

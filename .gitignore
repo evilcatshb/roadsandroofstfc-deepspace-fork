@@ -23,3 +23,15 @@ run
 
 # Files from Forge MDK
 forge*changelog.txt
+
+# Local development artifacts and backups (not source)
+*.BAK
+*.BAK[0-9]*
+*.BAK-*
+*.log
+*.pid
+*.exit
+/backups/
+/src.BAK*/
+/DEEPSPACE_*PLAN*.md
+/port_todo_progress.md*

@@ -1,6 +1,5 @@
 package com.therighthon.rnr.common.block;
 
-import net.dries007.tfc.util.Helpers;
 
 public class TampedMudBlock extends TampedSoilBlock
 {

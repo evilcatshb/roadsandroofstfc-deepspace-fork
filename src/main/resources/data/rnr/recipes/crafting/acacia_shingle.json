@@ -1,0 +1,21 @@
+{
+  "type": "rnr:damage_inputs_shapeless_crafting",
+  "recipe": {
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+      {
+        "item": "minecraft:acacia_log"
+      },
+      {
+        "tag": "forge:tools/saws"
+      },
+      {
+        "tag": "forge:tools/files"
+      }
+    ],
+    "result": {
+      "item": "rnr:wood/shingle/acacia",
+      "count": 4
+    }
+  }
+}

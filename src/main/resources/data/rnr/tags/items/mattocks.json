@@ -9,6 +9,7 @@
     "rnr:metal/mattock/steel",
     "rnr:metal/mattock/black_steel",
     "rnr:metal/mattock/blue_steel",
-    "rnr:metal/mattock/red_steel"
+    "rnr:metal/mattock/red_steel",
+    "tconstruct:mattock"
   ]
 }

@@ -24,59 +24,20 @@ idea {
 }
 
 repositories {
-    maven {
-        // tfc
-        url 'https://www.cursemaven.com'
-        content {
-            includeGroup "curse.maven"
-        }
-    }
-
-    maven {
-        // Patchouli
-        name = "BlameJared"
-        url = "https://maven.blamejared.com"
-    }
+    maven { url 'https://www.cursemaven.com'; content { includeGroup "curse.maven" } }
+    maven { name = "BlameJared"; url = "https://maven.blamejared.com" }
+    maven { name = "Terraformers"; url = "https://maven.terraformersmc.com/releases" }
 }
 
 dependencies {
-
-    // Minecraft
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-
-    // Mixin
     annotationProcessor("org.spongepowered:mixin:${mixin_version}:processor")
-
-    // TFC
-    fg.deobf("curse.maven:terrafirmacraft-302973:${tfc_version}")
-    implementation fg.deobf("curse.maven:terrafirmacraft-302973:${tfc_version}")
-
-    // Immersive Engineering
-//    implementation fg.deobf("curse.maven:immersive-engineering-231951:${ie_version}")
-
-    // Create
-//    implementation fg.deobf("curse.maven:create-328085:${create_version}")
-    //JEI
     compileOnly(fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}"))
+    compileOnly(fg.deobf("dev.emi:emi-forge:1.1.24+1.20.1"))
     compileOnly(fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"))
     runtimeOnly(fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}"))
-
-    // Patchouli
-    fg.deobf("curse.maven:patchouli-306770:${patchouli_version}")
-    implementation fg.deobf("curse.maven:patchouli-306770:${patchouli_version}")
-
-    // Jade
     compileOnly(fg.deobf("curse.maven:jade-324717:${jade_version}"))
-
-    // Only use Jade at runtime
     runtimeOnly(fg.deobf("curse.maven:jade-324717:${jade_version}"))
-
-    // AFC
-    compileOnly(fg.deobf("curse.maven:arborfirmacraft-877545:${afc_version}"))
-
-    // Only use AFC at runtime
-    runtimeOnly(fg.deobf("curse.maven:arborfirmacraft-877545:${afc_version}"))
-
 }
 
 processResources {

@@ -1,6 +1,6 @@
 {
   "__comment__": "This file was automatically created by mcresources",
-  "type": "tfc:chisel",
+  "type": "rnr:mattock",
   "ingredient": "rnr:terracotta_roof",
   "result": "rnr:terracotta_roof_slab",
   "mode": "slab",

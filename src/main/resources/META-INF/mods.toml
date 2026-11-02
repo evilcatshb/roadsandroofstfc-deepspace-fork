@@ -27,12 +27,6 @@ description='''
 A decoration addon for TerraFirmaCraft centered around roads and roofs.
 '''
 [[dependencies.rnr]]
-    modId="tfc"
-    mandatory=true
-    versionRange="[0,)"
-    ordering="AFTER"
-    side="BOTH"
-[[dependencies.rnr]]
     modId="forge"
     mandatory=true
     versionRange="[40,)"
@@ -44,3 +38,10 @@ A decoration addon for TerraFirmaCraft centered around roads and roofs.
     versionRange="[1.20.1,1.21)"
     ordering="AFTER"
     side="BOTH"
+
+[[dependencies.rnr]]
+    modId="emi"
+    mandatory=false
+    versionRange="[1.1,)"
+    ordering="AFTER"
+    side="CLIENT"

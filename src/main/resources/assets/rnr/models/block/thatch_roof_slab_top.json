@@ -2,8 +2,8 @@
   "__comment__": "This file was automatically created by mcresources",
   "parent": "block/slab_top",
   "textures": {
-    "bottom": "tfc:block/thatch",
-    "top": "tfc:block/thatch",
-    "side": "tfc:block/thatch"
+    "bottom": "minecraft:block/hay_block_side",
+    "top": "minecraft:block/hay_block_side",
+    "side": "minecraft:block/hay_block_side"
   }
 }

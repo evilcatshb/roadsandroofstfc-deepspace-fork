@@ -1,11 +1,10 @@
 package com.therighthon.rnr.common.item;
+import com.therighthon.rnr.common.RNRUtil;
 
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Supplier;
 import com.therighthon.rnr.RoadsAndRoofs;
-import com.therighthon.rnr.common.fluid.RNRFluids;
-import com.therighthon.rnr.common.fluid.SimpleRNRFluid;
 
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
@@ -13,12 +12,10 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-import net.dries007.tfc.common.blocks.rock.Rock;
-import net.dries007.tfc.common.blocks.soil.SandBlockType;
-import net.dries007.tfc.common.blocks.wood.Wood;
-import net.dries007.tfc.common.items.ToolItem;
-import net.dries007.tfc.util.Helpers;
-import net.dries007.tfc.util.Metal;
+import com.therighthon.rnr.common.material.RNRMaterials.Rock;
+import com.therighthon.rnr.common.material.RNRMaterials.SandBlockType;
+import com.therighthon.rnr.common.material.RNRMaterials.Wood;
+import com.therighthon.rnr.common.material.RNRMaterials.Metal;
 
 
 public class RNRItems
@@ -26,26 +23,25 @@ public class RNRItems
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, RoadsAndRoofs.MOD_ID);
 
     //Metal Items
-    public static final Map<Metal.Default, RegistryObject<Item>> MATTOCK_HEADS = Helpers.mapOfKeys(Metal.Default.class, Metal.Default::hasUtilities, metal -> register("metal/mattock_head/" + metal.name()));
-    public static final Map<Metal.Default, RegistryObject<Item>> MATTOCKS = Helpers.mapOfKeys(Metal.Default.class, Metal.Default::hasUtilities, metal -> register("metal/mattock/" + metal.name(), () -> new MattockItem(metal.toolTier(), ToolItem.calculateVanillaAttackDamage(0.27f, metal.toolTier()), -1.5F, Metal.ItemType.properties(metal))));
+    public static final Map<Metal, RegistryObject<Item>> MATTOCK_HEADS = RNRUtil.mapOfKeys(Metal.class, Metal::hasUtilities, metal -> register("metal/mattock_head/" + metal.getSerializedName()));
+    public static final Map<Metal, RegistryObject<Item>> MATTOCKS = RNRUtil.mapOfKeys(Metal.class, Metal::hasUtilities, metal -> register("metal/mattock/" + metal.getSerializedName(), () -> new MattockItem(metal.toolTier(), 1.0f, -1.5F, metal.properties())));
 
     //Stone items
-    public static final Map<Rock, RegistryObject<Item>> FLAGSTONE = Helpers.mapOfKeys(Rock.class, type ->
-        register("flagstone/" + type.name())
+    public static final Map<Rock, RegistryObject<Item>> FLAGSTONE = RNRUtil.mapOfKeys(Rock.class, type ->
+        register("flagstone/" + type.getSerializedName())
     );
-    public static final Map<Rock, RegistryObject<Item>> GRAVEL_FILL = Helpers.mapOfKeys(Rock.class, type ->
-        register("gravel_fill/" + type.name())
+    public static final Map<Rock, RegistryObject<Item>> GRAVEL_FILL = RNRUtil.mapOfKeys(Rock.class, type ->
+        register("gravel_fill/" + type.getSerializedName())
     );
-    public static final Map<SandBlockType, RegistryObject<Item>> SANDSTONE_FLAGSTONE = Helpers.mapOfKeys(SandBlockType.class, type ->
-        register("flagstone/" + type.name() + "_sandstone")
+    public static final Map<SandBlockType, RegistryObject<Item>> SANDSTONE_FLAGSTONE = RNRUtil.mapOfKeys(SandBlockType.class, type ->
+        register("flagstone/" + type.getSerializedName() + "_sandstone")
     );
 
     public static final RegistryObject<Item> UNFIRED_ROOF_TILE = register("unfired_roof_tile");
     public static final RegistryObject<Item> UNFIRED_TERRACOTTA_ROOF_TILE = register("unfired_terracotta_roof_tile");
     public static final RegistryObject<Item> CERAMIC_ROOF_TILE = register("ceramic_roof_tile");
     public static final RegistryObject<Item> TERRACOTTA_ROOF_TILE = register("terracotta_roof_tile");
-    public static final RegistryObject<Item> CONCRETE_POWDER = register("concrete_powder");
-    public static final Map<Wood, RegistryObject<Item>> WOOD_SHINGLE = Helpers.mapOfKeys(Wood.class, wood -> register("wood/shingle/" + wood.getSerializedName()));
+    public static final Map<Wood, RegistryObject<Item>> WOOD_SHINGLE = RNRUtil.mapOfKeys(Wood.class, wood -> register("wood/shingle/" + wood.getSerializedName()));
 
     //Misc items
     public static final RegistryObject<Item> CRUSHED_BASE_COURSE = register("crushed_base_course");
@@ -61,9 +57,4 @@ public class RNRItems
         return ITEMS.register(name.toLowerCase(Locale.ROOT), item);
     }
 
-    //Fluids
-    public static final Map<SimpleRNRFluid, RegistryObject<BucketItem>> SIMPLE_RNR_FLUID_BUCKETS = Helpers.mapOfKeys(SimpleRNRFluid.class, fluid ->
-        register("bucket/" + fluid.getSerializedName(), () -> new BucketItem(RNRFluids.SIMPLE_RNR_FLUIDS.get(fluid).source(), new Item.Properties()))
-    );
 }
-

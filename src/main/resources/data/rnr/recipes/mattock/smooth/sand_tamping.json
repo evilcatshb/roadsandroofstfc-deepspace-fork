@@ -1,0 +1,9 @@
+{
+  "type": "rnr:mattock",
+  "ingredient": [
+    "minecraft:sand",
+    "minecraft:red_sand"
+  ],
+  "result": "rnr:tamped_sandy_loam",
+  "mode": "smooth"
+}

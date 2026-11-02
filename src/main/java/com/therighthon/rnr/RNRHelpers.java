@@ -1,174 +1,156 @@
 package com.therighthon.rnr;
 
-import com.mojang.datafixers.util.Either;
+import com.therighthon.rnr.common.RNRPlayerData;
 import com.therighthon.rnr.common.RNRTags;
-import com.therighthon.rnr.common.block.CrackingWetConcretePathBlock;
-import com.therighthon.rnr.common.block.WetConcretePathControlJointBlock;
-import com.therighthon.rnr.common.fluid.RNRFluids;
-import com.therighthon.rnr.common.fluid.SimpleRNRFluid;
-import com.therighthon.rnr.common.item.RNRItems;
 import com.therighthon.rnr.common.recipe.BlockModRecipe;
 import com.therighthon.rnr.common.recipe.MattockRecipe;
-import java.util.function.Function;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import net.minecraftforge.items.ItemHandlerHelper;
-
-import net.dries007.tfc.common.TFCTags;
-import net.dries007.tfc.common.blockentities.TickCounterBlockEntity;
-import net.dries007.tfc.common.capabilities.Capabilities;
-import net.dries007.tfc.common.capabilities.player.PlayerDataCapability;
-import net.dries007.tfc.common.items.TFCItems;
-import net.dries007.tfc.common.recipes.CollapseRecipe;
-import net.dries007.tfc.config.TFCConfig;
-import net.dries007.tfc.util.Helpers;
-
-import static com.therighthon.rnr.common.block.CrackingWetConcretePathBlock.*;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public final class RNRHelpers
 {
-    public static InteractionResult blockModRecipeCompatible(BlockState blockState, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
+    public static InteractionResult blockModRecipeCompatible(BlockState state, Level level, BlockPos pos, Player player,
+            InteractionHand hand, BlockHitResult hit)
     {
-        ItemStack stack = player.getItemInHand(hand);
-        final BlockModRecipe recipe = BlockModRecipe.getRecipe(level.getBlockState(pos), stack);
-        if (recipe != null && !(player.blockPosition().equals(pos)))
-        {
-            final BlockState output = recipe.getOutputBlock().getBlock().withPropertiesOf(blockState);
-            if (!player.isCreative() && recipe.consumesItem())
-            {
+        BlockModRecipe r = BlockModRecipe.getRecipe(state, player.getItemInHand(hand));
+        if (r == null || player.blockPosition().equals(pos))
+            return InteractionResult.FAIL;
 
-                // Concrete pouring
-                final IFluidHandlerItem fluidHandler = stack.getCapability(Capabilities.FLUID_ITEM).resolve().orElse(null);
-                if (fluidHandler != null) {
-                    fluidHandler.drain(1000, IFluidHandler.FluidAction.EXECUTE);
-                    player.setItemInHand(hand, fluidHandler.getContainer());
-                }
-                else if (stack.isDamageableItem())
+        if (!level.isClientSide && r.consumesItem() && !player.isCreative())
+        {
+            ItemStack s = player.getItemInHand(hand);
+            boolean concreteBucket = s.is(net.minecraftforge.registries.ForgeRegistries.ITEMS
+                    .getValue(new ResourceLocation("gtceu:concrete_bucket")));
+            if (s.isDamageableItem())
+                s.hurtAndBreak(1, player, p -> {});
+            else
+            {
+                s.shrink(1);
+                if (concreteBucket)
                 {
-                    stack.setDamageValue(stack.getDamageValue() - 1);
-                }
-                else
-                {
-                    stack.shrink(1);
+                    if (s.isEmpty())
+                        player.setItemInHand(hand, new ItemStack(net.minecraft.world.item.Items.BUCKET));
+                    else
+                        player.getInventory().placeItemBackInInventory(new ItemStack(net.minecraft.world.item.Items.BUCKET));
                 }
             }
-            level.playLocalSound(pos, output.getSoundType().getHitSound(), SoundSource.BLOCKS, 1f, 1f, false);
-            level.setBlock(pos, output, 3);
-            level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(player, blockState));
+        }
+
+        level.setBlock(pos, r.getOutputBlock(), 3);
+        level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(player, state));
+        return InteractionResult.SUCCESS;
+    }
+
+    /**
+     * Applies the Roads & Roofs Mattock's in-world shape transformations.
+     *
+     * Any RNR block with a matching <base>_stairs and <base>_slab registration
+     * can be converted base -> stairs. Any RNR *_stairs block with a matching
+     * *_slab registration can be converted stairs -> slab. This deliberately
+     * uses the registry rather than a hard-coded list so newly registered RNR
+     * road/roof variants receive the same behaviour automatically.
+     */
+    private static BlockState getRoadOrRoofShapeResult(Player player, Level level, BlockPos pos,
+            BlockHitResult hit)
+    {
+        BlockState current = level.getBlockState(pos);
+        ResourceLocation currentId = ForgeRegistries.BLOCKS.getKey(current.getBlock());
+        if (currentId == null || !RoadsAndRoofs.MOD_ID.equals(currentId.getNamespace()))
+            return null;
+
+        String path = currentId.getPath();
+        ResourceLocation targetId;
+
+        if (path.endsWith("_stairs"))
+        {
+            targetId = new ResourceLocation(currentId.getNamespace(),
+                    path.substring(0, path.length() - "_stairs".length()) + "_slab");
+        }
+        else
+        {
+            targetId = new ResourceLocation(currentId.getNamespace(), path + "_stairs");
+            ResourceLocation slabId = new ResourceLocation(currentId.getNamespace(), path + "_slab");
+            if (!ForgeRegistries.BLOCKS.containsKey(targetId) || !ForgeRegistries.BLOCKS.containsKey(slabId))
+                return null;
+        }
+
+        if (!ForgeRegistries.BLOCKS.containsKey(targetId))
+            return null;
+
+        Block target = ForgeRegistries.BLOCKS.getValue(targetId);
+        if (target == null || target == current.getBlock())
+            return null;
+
+        BlockState result;
+        if (path.endsWith("_stairs"))
+        {
+            result = target.defaultBlockState();
+        }
+        else
+        {
+            result = target.getStateForPlacement(new BlockPlaceContext(player, InteractionHand.MAIN_HAND,
+                    new ItemStack(target), hit));
+            if (result == null)
+                return null;
+        }
+
+        // Preserve waterlogging when both the source and destination expose it.
+        if (current.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED)
+                && result.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED))
+        {
+            result = result.setValue(
+                    net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED,
+                    current.getValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED));
+        }
+
+        return result;
+    }
+
+    public static InteractionResult useMattockOn(Player player, Level level, BlockPos pos,
+            BlockHitResult hit, InteractionHand hand)
+    {
+        // The shape conversion is intentionally checked first. It is independent
+        // of the selectable MattockRecipe mode, so base -> stairs and stairs -> slab
+        // always work with the Mattock when the corresponding RNR variants exist.
+        BlockState shapeResult = getRoadOrRoofShapeResult(player, level, pos, hit);
+        if (shapeResult != null)
+        {
+            if (!level.isClientSide)
+                player.getItemInHand(hand).hurtAndBreak(1, player, p -> {});
+            level.setBlockAndUpdate(pos, shapeResult);
+            level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(player, level.getBlockState(pos)));
             return InteractionResult.SUCCESS;
         }
-        return InteractionResult.FAIL;
-    }
 
-    public static InteractionResult useMattockOn(Player player, Level level, BlockPos pos, BlockHitResult blockHitResult)
-    {
-        if (player != null)
-        {
-            final BlockState state = level.getBlockState(pos);
-            final Either<BlockState, InteractionResult> result = MattockRecipe.computeResult(player, state, blockHitResult, true);
-            return result.map(resultState -> {
-                player.playSound(resultState.getSoundType().getHitSound(), 1f, 1f);
-
-                ItemStack held = player.getMainHandItem();
-                if (!level.isClientSide)
-                {
-                    if (TFCConfig.SERVER.enableChiselsStartCollapses.get())
-                    {
-                        if (Helpers.isBlock(state, TFCTags.Blocks.CAN_TRIGGER_COLLAPSE) && CollapseRecipe.tryTriggerCollapse(level, pos))
-                        {
-                            return InteractionResult.SUCCESS; // Abort chiseling
-                        }
-                    }
-
-                    player.getCapability(PlayerDataCapability.CAPABILITY).ifPresent(cap -> {
-                        final MattockRecipe recipeUsed = MattockRecipe.getRecipe(state, held, cap.getChiselMode());
-                        if (recipeUsed != null)
-                        {
-                            ItemStack extraDrop = recipeUsed.getExtraDrop(held);
-                            if (!extraDrop.isEmpty())
-                            {
-                                ItemHandlerHelper.giveItemToPlayer(player, extraDrop);
-                            }
-                        }
-                    });
-                }
-                //Silly hard code to make joints connect properly
-                if (resultState.getBlock() instanceof WetConcretePathControlJointBlock)
-                {
-                    resultState = WetConcretePathControlJointBlock.updateControlJointShape(resultState, Direction.NORTH, level.getBlockState(pos.north()));
-                    resultState = WetConcretePathControlJointBlock.updateControlJointShape(resultState, Direction.EAST, level.getBlockState(pos.east()));
-                    resultState = WetConcretePathControlJointBlock.updateControlJointShape(resultState, Direction.SOUTH, level.getBlockState(pos.south()));
-                    resultState = WetConcretePathControlJointBlock.updateControlJointShape(resultState, Direction.WEST, level.getBlockState(pos.west()));
-                }
-                level.setBlockAndUpdate(pos, resultState);
-
-
-                held.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(InteractionHand.MAIN_HAND));
-                player.getCooldowns().addCooldown(held.getItem(), 5);
-                return InteractionResult.SUCCESS;
-            }, Function.identity()); // returns the interaction result if we are given one
-        }
-        return InteractionResult.PASS;
-    }
-
-    public static void updateWetCrackingConcrete(Level level, BlockPos pos)
-    {
-        for (int i : new int[] {1, -1, 2, -2})
-        {
-            final int dist = Math.abs(i);
-
-            final BlockPos xPos = pos.offset(i, 0, 0);
-            final BlockState xState = level.getBlockState(xPos);
-            if (xState.getBlock() instanceof CrackingWetConcretePathBlock)
+        // Preserve the existing recipe-driven Mattock behaviour for all other
+        // transformations (tamping, concrete processing, etc.).
+        var result = MattockRecipe.computeResult(player, level.getBlockState(pos), hit, true);
+        return result.map(out -> {
+            if (!level.isClientSide)
             {
-                // Block mod recipes should not reset concrete cure times
-                if (level.getBlockEntity(xPos) instanceof TickCounterBlockEntity counter)
-                {
-                    final long lastUpdateTick = counter.getLastUpdateTick();
-                    level.setBlockAndUpdate(xPos, xState.setValue(DISTANCE_X, Math.min(xState.getValue(DISTANCE_X), dist)));
-                    if (level.getBlockEntity(xPos) instanceof TickCounterBlockEntity newCounter)
-                        newCounter.setLastUpdateTick(lastUpdateTick);
-                }
-                else
-                {
-                    level.setBlockAndUpdate(xPos, xState.setValue(DISTANCE_X, Math.min(xState.getValue(DISTANCE_X), dist)));
-                }
+                MattockRecipe r = MattockRecipe.getRecipe(level.getBlockState(pos), player.getItemInHand(hand),
+                        RNRPlayerData.getMode(player));
+                if (r != null && !r.getExtraDrop(player.getItemInHand(hand)).isEmpty())
+                    player.getInventory().placeItemBackInInventory(r.getExtraDrop(player.getItemInHand(hand)));
+                player.getItemInHand(hand).hurtAndBreak(1, player, x -> {});
             }
-
-            final BlockPos zPos = pos.offset(0, 0, i);
-            final BlockState zState = level.getBlockState(zPos);
-            if (zState.getBlock() instanceof CrackingWetConcretePathBlock)
-            {
-
-                // Block mod recipes should not reset concrete cure times
-                if (level.getBlockEntity(zPos) instanceof TickCounterBlockEntity counter)
-                {
-                    final long lastUpdateTick = counter.getLastUpdateTick();
-                    level.setBlockAndUpdate(zPos, zState.setValue(DISTANCE_Z, Math.min(zState.getValue(DISTANCE_Z), dist)));
-                    if (level.getBlockEntity(zPos) instanceof TickCounterBlockEntity newCounter)
-                        newCounter.setLastUpdateTick(lastUpdateTick);
-                }
-                else
-                {
-                    level.setBlockAndUpdate(zPos, zState.setValue(DISTANCE_Z, Math.min(zState.getValue(DISTANCE_Z), dist)));
-                }
-            }
-        }
+            level.setBlockAndUpdate(pos, out);
+            return InteractionResult.SUCCESS;
+        }, x -> x);
     }
+
+    public static void updateWetCrackingConcrete(Level level, BlockPos pos) {}
+
+    private RNRHelpers() {}
 }

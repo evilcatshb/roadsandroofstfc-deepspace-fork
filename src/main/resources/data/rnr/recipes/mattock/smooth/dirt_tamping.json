@@ -1,0 +1,9 @@
+{
+  "type": "rnr:mattock",
+  "ingredient": [
+    "minecraft:dirt",
+    "minecraft:grass_block"
+  ],
+  "result": "rnr:tamped_loam",
+  "mode": "smooth"
+}

@@ -1,0 +1,6 @@
+{
+  "type": "rnr:mattock",
+  "ingredient": "minecraft:moss_block",
+  "result": "rnr:tamped_peat",
+  "mode": "smooth"
+}

@@ -1,0 +1,6 @@
+{
+  "type": "rnr:block_mod",
+  "input_item": { "item": "gtceu:concrete_bucket" },
+  "input_block": "rnr:base_course",
+  "output_block": "rnr:pouring_concrete_road"
+}

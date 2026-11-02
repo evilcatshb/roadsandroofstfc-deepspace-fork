@@ -1,0 +1,7 @@
+{
+  "__comment__": "Crushed Base Course converts all supported tamped soil/mud road bases into Base Course.",
+  "type": "rnr:block_mod",
+  "input_item": { "item": "rnr:crushed_base_course" },
+  "input_block": "rnr:tamped_silty_loam_mud",
+  "output_block": "rnr:base_course"
+}

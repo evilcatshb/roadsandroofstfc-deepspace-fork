@@ -16,7 +16,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 
-import net.dries007.tfc.util.Helpers;
 
 public class BaseCourseBlock extends BaseCourseHeightBlock
 {

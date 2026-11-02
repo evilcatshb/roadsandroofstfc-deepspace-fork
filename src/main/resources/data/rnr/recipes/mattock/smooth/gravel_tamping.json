@@ -1,0 +1,6 @@
+{
+  "type": "rnr:mattock",
+  "ingredient": "minecraft:gravel",
+  "result": "rnr:tamped_silt",
+  "mode": "smooth"
+}

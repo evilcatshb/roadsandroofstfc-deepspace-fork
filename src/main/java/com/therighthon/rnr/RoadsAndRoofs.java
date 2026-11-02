@@ -3,10 +3,9 @@ package com.therighthon.rnr;
 import com.mojang.logging.LogUtils;
 import com.therighthon.rnr.client.ClientEventHandler;
 import com.therighthon.rnr.common.RNRCreativeModeTabs;
-import com.therighthon.rnr.common.block.AFCCompatBlocks;
+import com.therighthon.rnr.common.RNRBlockEntities;
 import com.therighthon.rnr.common.block.RNRBlocks;
 import com.therighthon.rnr.common.fluid.RNRFluids;
-import com.therighthon.rnr.common.item.AFCCompatItems;
 import com.therighthon.rnr.common.item.RNRItems;
 import com.therighthon.rnr.common.recipe.RNRRecipeSerializers;
 import com.therighthon.rnr.common.recipe.RNRRecipeTypes;
@@ -43,6 +42,7 @@ public class RoadsAndRoofs
         RNRBlocks.BLOCKS.register(eventBus);
         RNRItems.ITEMS.register(eventBus);
         RNRFluids.FLUIDS.register(eventBus);
+        RNRBlockEntities.BLOCK_ENTITIES.register(eventBus);
         RNRRecipeTypes.RECIPE_TYPES.register(eventBus);
         RNRRecipeSerializers.RECIPE_SERIALIZERS.register(eventBus);
         RNRCreativeModeTabs.CREATIVE_TABS.register(eventBus);
@@ -54,13 +54,6 @@ public class RoadsAndRoofs
         if (FMLEnvironment.dist == Dist.CLIENT)
         {
             ClientEventHandler.init();
-        }
-
-        if (ModList.get().isLoaded("afc"))
-        {
-            AFCCompatBlocks.BLOCKS.register(eventBus);
-            AFCCompatItems.ITEMS.register(eventBus);
-            ModEvents.initAFCCompat();
         }
 
         final IEventBus forgeBus = MinecraftForge.EVENT_BUS;
